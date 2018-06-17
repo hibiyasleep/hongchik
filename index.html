@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title> 자유대한민국을 지키자 </title>
+    <script src="https://unpkg.com/vue@2.x"></script>
+    <script src="https://unpkg.com/file-saver@1.3.8/FileSaver.js"></script>
+    <script>
+
+var hongchik = new Image()
+hongchik.src = './hongchik.png'
+
+var initializeVue = function() {
+  window.vm = new Vue({
+    el: 'main',
+    data: function() {
+      return {
+        text: '[여기에 텍스트 입력]\n두 줄까지 가능',
+        subtext: '',
+        font: '',
+        color: '#000',
+        subcolor: '#000',
+        ctx: null,
+        loading: false,
+        timer: null
+      }
+    },
+    methods: {
+      ontype: function(event) {
+        console.log(event.keyCode)
+        if(this.text.indexOf('\n') !== -1 && event.keyCode === 13) {
+          event.preventDefault()
+          return false
+        }
+        return true
+      },
+      reflow: function() {
+        this.ctx.drawImage(hongchik, 0, 0, 750, 403)
+        this.writeText()
+      },
+      reflowPartially: function() {
+        this.ctx.drawImage(hongchik, 0, 0, 750, 403)
+      },
+      writeText: function() {
+        var ydiff = this.subtext? 4 : 0
+        let font = this.loading? 'sans-serif' : this.currentFont
+        this.ctx.fillStyle = this.color
+        this.ctx.textAlign = 'center'
+        if(this.isMultiline && !this.loading) {
+          var fontsize = (22 - ydiff * 0.3)
+          this.ctx.font = fontsize + 'px ' + font
+          this.ctx.fillText(this.firstLine, 335, 164 + fontsize, 530)
+          this.ctx.fillText(this.lastLine, 335, 164 + (fontsize * 2) + 4, 530)
+        } else {
+          var fontsize = (40 - ydiff * 0.5)
+          this.ctx.font = fontsize + 'px ' + font
+          this.ctx.fillText(this.loading? '폰트 로드 중...' : this.text, 335, 168 + fontsize - ydiff, 530)
+        }
+
+        if(this.subtext) {
+          this.ctx.fillStyle = this.subcolor
+          this.ctx.textAlign = 'right'
+          this.ctx.font = '14px ' + font
+          this.ctx.fillText(this.loading? '로딩 중...' : this.subtext, 610, 216, 500)
+        }
+      },
+      fontLoaded(font) {
+        if(document.fonts) {
+          return font === '' || document.fonts.status === 'loaded' && document.fonts.check('16px ' + font)
+        } else {
+          this.ctx.fontSize = '100px monospace'
+          let measure0 = this.ctx.measureText('giItT1WQy@!-/#한글')
+          this.ctx.font = '100px ' + font + ', monospace'
+          let measure1 = this.ctx.measureText('giItT1WQy@!-/#한글')
+
+          return font === '' || measure0.width !== measure1.width
+        }
+      },
+      download() {
+        var dataURL = document.getElementById('c').toDataURL()
+        var byte = atob(dataURL.split(',')[1])
+        var mime = dataURL.split(',')[0].split(':')[1].split(';')[0]
+        var ia = new Uint8Array(byte.length)
+        for(var i = 0; i < byte.length; i++) {
+          ia[i] = byte.charCodeAt(i)
+        }
+        var blob = new Blob([ia], {type: mime})
+        saveAs(blob, 'hongchik-' + Date.now() + '.png')
+      }
+    },
+    computed: {
+      isMultiline: function() {
+        return this.text.indexOf('\n') !== -1
+      },
+      firstLine: function() {
+        return this.text.split('\n')[0]
+      },
+      lastLine: function() {
+        return this.text.split('\n')[1]
+      },
+      currentFont: function() {
+        return this.font || '-apple-system, BlinkMacSystemFont, sans-serif'
+      }
+    },
+    created: function() {
+      this.ctx = document.getElementById('c').getContext('2d')
+
+      this.reflow()
+    },
+    watch: {
+      font: function(to) {
+        this.loading = true
+        this.reflow()
+
+        setTimeout(() => this.reflow(), 500)
+
+        var done = () => {
+          clearInterval(this.timer)
+          this.loading = false
+          this.timer = null
+        }
+        if(this.timer) {
+          done()
+        }
+        this.timer = setInterval(() => {
+          if(this.fontLoaded(this.font)) {
+            done()
+            this.reflow()
+          }
+        }, 50)
+        if(this.fontLoaded(this.font)) {
+          done()
+          this.reflow()
+        }
+      }
+    }
+  })
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  if(hongchik.readyState !== 3) {
+    hongchik.addEventListener('load', initializeVue)
+  } else {
+    initializeVue()
+  }
+})
+    </script>
+    <style>
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: sans-serif;
+  text-align: center;
+}
+canvas {
+  max-width: 100%;
+  object-fit: contain;
+  margin-top: 2rem;
+}
+main > div {
+  display: flex;
+  flex-direction: column;
+
+  width: 17.5rem;
+  margin: 0 auto;
+}
+main > div > div > p {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+main > div > div > p > input,
+main > div > div > p > select {
+  flex-grow: 1;
+}
+select, input, textarea, button {
+  -webkit-appearance: none;
+  position: relative;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.25rem;
+  color: inherit;
+  border: 0.01rem solid rgba(0, 0, 0, 0.5);
+  border-radius: 0;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  background: none;
+  text-align: center;
+}
+.sub-input {
+  text-align: right;
+}
+select {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="12"><polygon points="2,2 10,2 6,10"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+.inputs {
+  border: 0.01rem solid rgba(0, 0, 0, 0.5);
+  margin-bottom: 2rem;
+}
+.inputs > p {
+  margin: 0;
+}
+.inputs textarea, .inputs input {
+  border: none !important
+}
+.inputs textarea {
+  height: 2rem;
+}
+.inputs textarea.multiline {
+  height: 3.5rem
+}
+button {
+
+}
+textarea {
+  width: 100%;
+  resize: none;
+}
+label {
+  padding: 0.25rem 0.5rem;
+}
+    </style>
+    <style>
+@font-face {
+  font-family: 'LotteMartDream';
+  font-style: normal;
+  font-weight: 400;
+  src: url('//cdn.jsdelivr.net/korean-webfonts/1/corps/lottemart/LotteMartDream/LotteMartDreamMedium.woff2') format('woff2'),
+       url('//cdn.jsdelivr.net/korean-webfonts/1/corps/lottemart/LotteMartDream/LotteMartDreamMedium.woff') format('woff');
+}
+@font-face {
+  font-family: 'LotteMartDream';
+  font-style: normal;
+  font-weight: 700;
+  src: url('//cdn.jsdelivr.net/korean-webfonts/1/corps/lottemart/LotteMartDream/LotteMartDreamBold.woff2') format('woff2'),
+       url('//cdn.jsdelivr.net/korean-webfonts/1/corps/lottemart/LotteMartDream/LotteMartDreamBold.woff') format('woff');
+}
+/*
+ * KoPub Batang (Korean) http://www.google.com/fonts/earlyaccess
+ */
+@font-face {
+  font-family: 'KoPub Batang';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/ea/kopubbatang/v3/KoPubBatang-Regular.woff2) format('woff2'),
+       url(//fonts.gstatic.com/ea/kopubbatang/v3/KoPubBatang-Regular.woff) format('woff');
+}
+@font-face {
+  font-family: 'SDKukdetopokki';
+  font-style: normal;
+  font-weight: 400;
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/SDKukdetopokki.woff') format('woff');
+}
+@font-face {
+  font-family: 'Spoqa Han Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Spoqa Han Sans Regular'),
+       url('https://cdn.rawgit.com/spoqa/spoqa-han-sans/212c9818/Subset/SpoqaHanSans/Spoqa%20Han%20Sans%20Regular.woff2') format('woff2'),
+       url('https://cdn.rawgit.com/spoqa/spoqa-han-sans/212c9818/Subset/SpoqaHanSans/Spoqa%20Han%20Sans%20Regular.woff') format('woff');
+}
+/*
+ * Jeju Hallasan (Korean) http://www.google.com/fonts/earlyaccess
+ */
+@font-face {
+  font-family: 'JejuHallasan';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/ea/jejuhallasan/v3/JejuHallasan-Regular.woff2) format('woff2'),
+       url(//fonts.gstatic.com/ea/jejuhallasan/v3/JejuHallasan-Regular.woff) format('woff');
+}
+@font-face {
+  font-family: 'ChosunilboMyungjo';
+  font-style: normal;
+  font-weight: 400;
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Chosunilbo_myungjo.woff') format('woff');
+}
+@font-face {
+  font-family: 'MiraenDaekyoDotum';
+  font-style: normal;
+  font-weight: 400;
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_three@1.2/MiraenDaekyoDotum.woff') format('woff');
+}
+    </style>
+  </head>
+  <body>
+    <canvas
+      width="750"
+      height="403"
+      id="c"></canvas>
+
+    <main>
+      <div>
+        <div class="controls">
+          <p>
+            <label>
+              폰트
+              <b v-show="loading"> 로드 중 </b>
+            </label>
+            <select v-model="font" @change="reflow" :style="{ 'font-family': font }">
+              <optgroup label="평범한 거">
+                <option value="" selected> 그냥 기본 폰트 </option>
+                <option style="font-family: Spoqa Han Sans" value="Spoqa Han Sans">본고딕 (Spoqa)</option>
+                <option style="font-family: KoPub Batang" value="KoPub Batang">KoPub 바탕</option>
+                <option style="font-family: MiraenDaekyoDotum" value="MiraenDaekyoDotum">미래엔대교 돋움</option>
+              </optgroup>
+              <optgroup label="이상한 거">
+                <option style="font-family: JejuHallasan" value="JejuHallasan">제주 한라산</option>
+                <option style="font-family: LotteMartDream" value="LotteMartDream">롯데마트 드림</option>
+                <option style="font-family: ChosunilboMyungjo" value="ChosunilboMyungjo">조선일보 명조</option>
+                <option style="font-family: SDKukdetopokki" value="SDKukdetopokki">국대떡볶이 (산돌)</option>
+              </optgroup>
+            </select>
+            <br v-show="loading" />
+          </p>
+          <p>
+            <label> 색상 </label>
+            <select v-model="color" @change="reflow" :style="{ color: color }">
+              <option value="#000" style="color: #000"> 검정 </option>
+              <option value="rgba(255, 0, 0, 0.9)" style="color: rgba(255, 0, 0, 0.9)"> 빨강 </option>
+              <option value="#f66" style="color: #f66"> 분홍 </option>
+            </select>
+            <select v-model="subcolor" @change="reflow" :style="{ color: subcolor }">
+              <option value="#000" style="color: #000"> 검정 </option>
+              <option value="rgba(255, 0, 0, 0.9)" style="color: rgba(255, 0, 0, 0.9)"> 빨강 </option>
+              <option value="#f66" style="color: #f66"> 분홍 </option>
+            </select>
+          </p>
+        </div>
+
+        <div class="inputs">
+          <p style="margin-bottom: 0;">
+            <textarea
+              cols="30"
+              rows="2"
+              v-model="text"
+              :style="{
+                color: color,
+                'font-family': font
+              }"
+              @keydown="ontype"
+              @input="reflow"
+              placeholder="(텍스트)"
+              :class="[ 'main-input', { multiline: isMultiline }]"></textarea>
+          </p>
+          <p style="margin-top: 0;">
+            <input
+              type="text"
+              v-model="subtext"
+              :style="{
+                color: subcolor,
+                'font-family': font
+              }"
+              @input="reflow"
+              placeholder="(부제)"
+              class="sub-input" />
+          </p>
+        </div>
+
+        <div class="done">
+          <button @click="download"> 도게자하기 </button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
