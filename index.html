@@ -54,8 +54,13 @@ var initializeVue = function() {
           this.ctx.fillText(this.lastLine, 335, 164 + (fontsize * 2) + 4, 530)
         } else {
           var fontsize = (40 - ydiff * 0.5)
+          var text = this.loading? '폰트 로드 중...' : this.text
+          if(this.ctx.measureText(text).width >= 530) {
+            fontsize -= 4
+            ydiff -= 4
+          }
           this.ctx.font = fontsize + 'px ' + font
-          this.ctx.fillText(this.loading? '폰트 로드 중...' : this.text, 335, 168 + fontsize - ydiff, 530)
+          this.ctx.fillText(text, 335, 168 + fontsize - ydiff, 530)
         }
 
         if(this.subtext) {
@@ -154,6 +159,8 @@ body {
   margin: 0;
   font-family: sans-serif;
   text-align: center;
+  background: #eee;
+  color: #111;
 }
 canvas {
   max-width: 100%;
@@ -164,7 +171,7 @@ main > div {
   display: flex;
   flex-direction: column;
 
-  width: 17.5rem;
+  width: 22rem;
   max-width: 100%;
   margin: 0 auto;
 }
@@ -214,6 +221,10 @@ select {
 }
 .inputs textarea.multiline {
   height: 3.5rem
+}
+.muted {
+  font-size: 0.75rem;
+  color: #999;
 }
 button {
 
@@ -364,17 +375,30 @@ label {
         </div>
 
         <div class="done">
-          <p style="display: block; font-size: 0.75rem; color: #999">
+          <p class="muted" style="display: block">
             <b>Disclaimer:</b>
             <br />
             제작자는 이 프로그램에 대해 아무런 책임도 지지 않습니다.
             <br />
             사용으로 인해 일어나는 문제는 모두 사용자의 책임입니다.
             <br />
-            <br />
-            이에 동의하고
           </p>
           <button @click="download"> 도게자하기 </button>
+        </div>
+
+        <div class="about" style="margin-top: 2rem">
+          <p class="muted" style="display: block">
+            <b>hongchik</b> 0.0.1
+            <br />
+            code (c) 2018 k. hibiya all rights reserved
+            <br />
+            AND none responsibility reserved
+            <br />
+            <br />
+            <a href="https://github.com/hibiyasleep/hongchik/issues">문제 제보하기</a>
+            <br />
+            안되면 90% 님 브라우저 문제임
+          </p>
         </div>
       </div>
     </main>
