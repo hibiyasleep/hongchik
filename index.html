@@ -15,6 +15,14 @@
     <script src="https://unpkg.com/file-saver@1.3.8/FileSaver.js"></script>
     <script>
 
+if(
+  document.referrer.indexOf('wikitree') !== -1 ||
+  document.referrer.indexOf('insight') !== -1 ||
+  document.referrer.indexOf('huffpost') !== -1
+) {
+  location.href = 'https://hibiyasleep.github.com/hongchik/you-are-not-alone.html'
+}
+
 var hongchik = new Image()
 hongchik.src = './hongchik.png'
 
