@@ -39,7 +39,8 @@ var initializeVue = function() {
         subcolor: '#000',
         ctx: null,
         loading: false,
-        timer: null
+        timer: null,
+        unusableBrowser: false
       }
     },
     methods: {
@@ -126,8 +127,11 @@ var initializeVue = function() {
     },
     created: function() {
       this.ctx = document.getElementById('c').getContext('2d')
-
       this.reflow()
+
+      if(navigator.userAgent.toLowerCase().indexOf('NAVER')) {
+        this.unusableBrowser = '네이버 앱은 브라우저가 아닙니다. Chrome을 사용하세요.'
+      }
     },
     watch: {
       font: function(to) {
@@ -241,6 +245,10 @@ select {
 .muted {
   font-size: 0.75rem;
   color: #999;
+}
+.error {
+  font-size: 0.75rem;
+  color: #f00;
 }
 button {
 
@@ -411,6 +419,11 @@ label {
             <br />
             좀 쫄림
             <br />
+          </p>
+          <p v-if="unusableBrowser" class="error" style="display: block">
+            <b> 다운로드할 수 없는 브라우저입니다. </b>
+            <br />
+            <b> 이유: </b> {{ unusableBrowser }}
           </p>
           <button @click="download"> 도게자하기 </button>
         </div>
