@@ -112,20 +112,20 @@ var initializeVue = function() {
       }
     },
     computed: {
-      isMultiline: function() {
+      isMultiline() {
         return this.text.indexOf('\n') !== -1
       },
-      firstLine: function() {
+      firstLine() {
         return this.text.split('\n')[0]
       },
-      lastLine: function() {
+      lastLine() {
         return this.text.split('\n')[1]
       },
-      currentFont: function() {
-        return this.font || '-apple-system, BlinkMacSystemFont, sans-serif'
+      currentFont() {
+        return this.font || 'system-ui, sans-serif'
       }
     },
-    created: function() {
+    created() {
       this.ctx = document.getElementById('c').getContext('2d')
       this.reflow()
 
@@ -134,7 +134,7 @@ var initializeVue = function() {
       }
     },
     watch: {
-      font: function(to) {
+      font(to) {
         this.loading = true
         this.reflow()
 
@@ -357,6 +357,7 @@ label {
                 <option style="font-family: ChosunilboMyungjo" value="ChosunilboMyungjo">조선일보 명조</option>
                 <option style="font-family: SDKukdetopokki" value="SDKukdetopokki">국대떡볶이 (산돌)</option>
                 <option style="font-family: KHNPHU" value="KHNPHU">한국수력원자력 한울림</option>
+                <option style="font-family: wkmrgoth" value="KHNPHU">ＷＩＮＫ중환고직</option>
               </optgroup>
             </select>
             <br v-show="loading" />
@@ -415,10 +416,6 @@ label {
             <br />
             사용으로 인해 일어나는 문제는 모두 사용자의 책임입니다.
             <br />
-            그래도 너무 문제될거같은 텍스트는 쓰지 말아주세요
-            <br />
-            좀 쫄림
-            <br />
           </p>
           <p v-if="unusableBrowser" class="error" style="display: block">
             <b> 다운로드할 수 없는 브라우저입니다. </b>
@@ -430,18 +427,18 @@ label {
 
         <div class="about" style="margin-top: 2rem">
           <p class="muted" style="display: block">
-            <b>hongchik</b> 0.0.3
+            <b>hongchik</b> 0.0.4
             <br />
-            code (c) 2018 k. hibiya all rights reserved
+            (c) 2018-2020 k. hibiya, hibiya inemuri
             <br />
-            AND none responsibility reserved
+            all rights reserved
             <br />
-            f*ck you pseudo-press, wiki*ree, huf*post
+            AND no responsibility reserved
             <br />
             <br />
             <a href="https://github.com/hibiyasleep/hongchik/issues">문제 제보하기</a>
             <br />
-            안되면 90% 님 브라우저 문제임
+            (95% 확률로 내 잘못은 아닌듯함)
           </p>
         </div>
       </div>
