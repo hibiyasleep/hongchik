@@ -25,7 +25,7 @@ if(
 }
 
 var hongchik = new Image()
-hongchik.src = './hongchik.png'
+hongchik.src = './assets/hongchik.png'
 
 var initializeVue = function() {
   window.vm = new Vue({
@@ -328,6 +328,15 @@ label {
   font-weight: 400;
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/KHNPHU.woff') format('woff');
 }
+/*
+ * wkmrgoth
+ */
+@font-face {
+  font-family: 'wkmrgoth';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./assets/wkmrgoth.ttf') format('ttf');
+}
     </style>
   </head>
   <body>
@@ -357,7 +366,7 @@ label {
                 <option style="font-family: ChosunilboMyungjo" value="ChosunilboMyungjo">조선일보 명조</option>
                 <option style="font-family: SDKukdetopokki" value="SDKukdetopokki">국대떡볶이 (산돌)</option>
                 <option style="font-family: KHNPHU" value="KHNPHU">한국수력원자력 한울림</option>
-                <option style="font-family: wkmrgoth" value="KHNPHU">ＷＩＮＫ중환고직</option>
+                <option style="font-family: wkmrgoth" value="wkmrgoth">ＷＩＮＫ중환고직</option>
               </optgroup>
             </select>
             <br v-show="loading" />
